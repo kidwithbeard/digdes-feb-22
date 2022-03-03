@@ -25,7 +25,7 @@ public class ConvertToCron {
     // HashMap, где key - разница между датами (в Long-формате), а value - как часто такая разница встречается
     public static HashMap<Long, Integer> differences = new HashMap<>();
 
-    public static void main(String[] args) throws DatesToCronConvertException {
+    public static void main(String[] args) {
         getImplementationInfo();
         convert(input);
 //        print();
@@ -34,13 +34,17 @@ public class ConvertToCron {
     // Скоро ниже будет решение
 
     // преобразование списка дат со временем в cron-формат
-    public static void convert(String[] input) throws DatesToCronConvertException {
-        stringsToDates(input);
-        datesToLong(dates);
-        Arrays.sort(longDates);
-        calculateDateDifferences(longDates);
-        requirement50percent();
-        cronCreation(); // не написан
+    public static void convert(String[] input) {
+        try {
+            stringsToDates(input);
+            datesToLong(dates);
+            Arrays.sort(longDates);
+            calculateDateDifferences(longDates);
+            requirement50percent();
+            cronCreation(); // не написан
+        } catch (DatesToCronConvertException e) {
+            System.out.println("DatesToCronConvertException caught");
+        }
     }
 
     // вывод информации о реализации интерфейса (ФИО, имя класса реализации, пакет, ссылка на github)
@@ -61,7 +65,7 @@ public class ConvertToCron {
         try {
             date = sdf.parse(str);
         } catch (ParseException e) {
-            System.out.println("Parsing error");
+            System.out.println("Некорректный формат даты");
             throw new DatesToCronConvertException();
         }
         return date;
@@ -98,6 +102,7 @@ public class ConvertToCron {
     // проверка, что cron удовлетворяет не меньше половины дат (> 50%)
     public static void requirement50percent() throws DatesToCronConvertException {
         if (Collections.max(differences.values()) < input.length / 2) {
+            System.out.println("Меньше половины дат имеют одинаковую периодичность");
             throw new DatesToCronConvertException();
         }
     }
@@ -115,7 +120,6 @@ public class ConvertToCron {
         }
 
         for (HashMap.Entry<Long, Integer> item : differences.entrySet()) {
-
             System.out.printf("Key: %s  Value: %s \n", item.getKey(), item.getValue());
         }
     }
